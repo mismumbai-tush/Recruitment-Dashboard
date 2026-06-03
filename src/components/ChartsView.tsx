@@ -115,7 +115,7 @@ export default function ChartsView({
 
   // ==================== CALCULATION REDUCERS ====================
 
-  // Chart 1: Pie Chart - Close, Revoked, Open
+  // Chart 1: Distribution of Recruitment  - Close, Revoked, Open
   const mrfStatusPieData = useMemo(() => {
     let openCount = 0;
     let closedCount = 0;
