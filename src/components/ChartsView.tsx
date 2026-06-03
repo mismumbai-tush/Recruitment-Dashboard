@@ -964,7 +964,7 @@ export default function ChartsView({
           <div className="mb-3">
             <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
               <KanbanSquare className="h-4.5 w-4.5 stroke-[2.5]" />
-              <h3 className="text-sm font-black text-black dark:text-white">Pie Chart - Close, Revoked, Open</h3>
+              <h3 className="text-sm font-black text-black dark:text-white">Distribution of Recruitment - Close, Revoked, Open</h3>
             </div>
           </div>
           
