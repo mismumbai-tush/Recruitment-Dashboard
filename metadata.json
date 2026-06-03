@@ -1,0 +1,6 @@
+{
+  "name": "HR Recruitment Dashboard",
+  "description": "A recruitment analytics dashboard providing KPIs and charts from Google Sheets tracker.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
