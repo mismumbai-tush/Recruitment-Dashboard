@@ -198,7 +198,7 @@ export function extractHeadersAndRows(values: string[][]) {
 
 // Synonyms for mapping Sheets columns safely
 const SYNONYMS = {
-  designation: ['designation', 'desgination', 'role', 'position', 'job title', 'title', 'trade'],
+  designation: ['required position', 'required possion', 'designation', 'desgination', 'role', 'position', 'job title', 'title', 'trade'],
   unit: ['unit', 'location', 'department', 'dept', 'branch', 'entity', 'division', 'factory', 'plant'],
   openings: ['openings', 'no of openings', 'no of opening', 'no. of. opening', 'vacancy', 'count', 'mrf count', 'needed', 'requirements'],
   status: ['status', 'stage', 'hiring status', 'mrf status', 'requisition status', 'candidate status', 'state', 'current status'],

@@ -1015,70 +1015,35 @@ export default function ChartsView({
           </div>
         </div>
 
-        {/* CHART 2: Column and Bar Charts - Atlas Charts - Opening Vs. Filled Positions By Designation */}
-        <div id="chart-card-opening-vs-filled-designation" className="bg-slate-50/70 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 p-5 rounded-2xl shadow-xs transition-shadow hover:shadow-md">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-            <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
-              <Briefcase className="h-4.5 w-4.5 stroke-[2.5]" />
-              <h3 className="text-sm font-black text-black dark:text-white">Opening Vs. Filled Positions By Designation</h3>
-            </div>
-            {/* Interactive Column Vs. Bar Tab Toggles (Atlas style switcher) */}
-            <div className="inline-flex rounded-lg p-0.5 bg-slate-200/60 dark:bg-slate-800/80 text-[10.5px] font-bold select-none self-start sm:self-center">
-              <button 
-                onClick={() => setDesignationChartStyle('bar')}
-                type="button"
-                className={`px-3 py-1 rounded-md transition-all cursor-pointer ${designationChartStyle === 'bar' ? 'bg-white text-black shadow-2xs dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400'}`}
-              >
-                Bar Chart
-              </button>
-              <button 
-                onClick={() => setDesignationChartStyle('column')}
-                type="button"
-                className={`px-3 py-1 rounded-md transition-all cursor-pointer ${designationChartStyle === 'column' ? 'bg-white text-black shadow-2xs dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400'}`}
-              >
-                Column Chart
-              </button>
+        {/* CHART 2: Column Chart - Graphical Unmet Demand by Location */}
+        <div id="chart-card-location-unmet-demand-graph" className="bg-slate-50/70 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 p-5 rounded-2xl shadow-xs transition-shadow hover:shadow-md">
+          <div className="mb-4">
+            <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400">
+              <MapPin className="h-4.5 w-4.5 stroke-[2.5]" />
+              <h3 className="text-sm font-black text-black dark:text-white">Graphical Unmet Demand by Location</h3>
             </div>
           </div>
 
           <div className="h-96">
-            {openingsVsFilledByDesignation.length === 0 ? (
-              <div className="h-full flex items-center justify-center text-slate-400 text-xs">No designation openings registered.</div>
+            {locationUnmetDemand.length === 0 ? (
+              <div className="h-full flex items-center justify-center text-slate-400 text-xs">No visual graph available.</div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                {designationChartStyle === 'column' ? (
-                  <BarChart data={openingsVsFilledByDesignation} margin={{ top: 10, right: 10, left: -25, bottom: 90 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-slate-200/50 dark:stroke-slate-900/60" />
-                    <XAxis 
-                      dataKey="designation" 
-                      className="text-[9px] font-black fill-black dark:fill-white text-clip" 
-                      angle={-90}
-                      textAnchor="end"
-                      interval={0}
-                      dx={-4}
-                      tickFormatter={(val) => val.length > 22 ? `${val.slice(0, 22)}...` : val} 
-                    />
-                    <YAxis className="text-[9px] font-mono fill-slate-500" />
-                    <Tooltip content={<CustomChartTooltip />} />
-                    <Legend 
-                      iconType="circle" 
-                      iconSize={8} 
-                      wrapperStyle={{ fontSize: '10.5px', fontWeight: 'bold', pt: 15 }} 
-                    />
-                    <Bar dataKey="openings" name="No of Opening" fill="#1254ff" radius={[4, 4, 0, 0]} barSize={10} />
-                    <Bar dataKey="joined" name="No of Joined" fill="#00ed64" radius={[4, 4, 0, 0]} barSize={10} />
-                  </BarChart>
-                ) : (
-                  <BarChart layout="vertical" data={openingsVsFilledByDesignation} margin={{ top: 10, right: 15, left: 15, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} className="stroke-slate-200/50 dark:stroke-slate-900/60" />
-                    <XAxis type="number" className="text-[9px] font-mono fill-slate-500" />
-                    <YAxis type="category" dataKey="designation" className="text-[9px] font-bold fill-slate-500" width={110} tickFormatter={(val) => val.length > 15 ? `${val.slice(0, 15)}...` : val} />
-                    <Tooltip content={<CustomChartTooltip />} />
-                    <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: '10.5px', fontWeight: 'bold' }} />
-                    <Bar dataKey="openings" name="No of Opening" fill="#1254ff" radius={[0, 4, 4, 0]} barSize={8} />
-                    <Bar dataKey="joined" name="No of Joined" fill="#00ed64" radius={[0, 4, 4, 0]} barSize={8} />
-                  </BarChart>
-                )}
+                <BarChart data={locationUnmetDemand} margin={{ top: 10, right: 10, left: -25, bottom: 125 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-slate-100/60 dark:stroke-slate-900/60" />
+                  <XAxis 
+                    dataKey="location" 
+                    className="text-[9px] font-black fill-black dark:fill-white text-clip" 
+                    angle={-90}
+                    textAnchor="end"
+                    interval={0}
+                    dx={-4}
+                    tickFormatter={(val) => val} 
+                  />
+                  <YAxis className="text-[9px] font-mono fill-slate-500" allowDecimals={false} />
+                  <Tooltip content={<CustomChartTooltip />} />
+                  <Bar dataKey="unmetDemand" name="Unmet Demand" fill="#f43f5e" radius={[4, 4, 0, 0]} barSize={12} />
+                </BarChart>
               </ResponsiveContainer>
             )}
           </div>
@@ -1098,12 +1063,12 @@ export default function ChartsView({
               <div className="h-full flex items-center justify-center text-slate-400 text-xs">No chronological application data captured.</div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyTrendsData} margin={{ top: 10, right: 10, left: -25, bottom: 5 }}>
+                <BarChart data={monthlyTrendsData} margin={{ top: 25, right: 10, left: -25, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-slate-100 dark:stroke-slate-900/60" />
                   <XAxis dataKey="monthLabel" className="text-[9px] font-bold fill-slate-400" />
                   <YAxis className="text-[9px] font-mono fill-slate-400" />
                   <Tooltip content={<CustomChartTooltip />} />
-                  <Legend iconSize={8} wrapperStyle={{ fontSize: '10.5px', fontWeight: 'bold' }} />
+                  <Legend align="right" verticalAlign="top" iconSize={8} wrapperStyle={{ fontSize: '10.5px', fontWeight: 'bold', top: 0, right: 0 }} />
                   <Bar dataKey="applied" name="Applied for Position" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={14} />
                   <Bar dataKey="joined" name="Joined" fill="#10b981" radius={[4, 4, 0, 0]} barSize={14} />
                 </BarChart>
@@ -1126,7 +1091,7 @@ export default function ChartsView({
               <div className="h-full flex items-center justify-center text-slate-400 text-xs">No requisition locations captured.</div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={statusMixByLocation} margin={{ top: 10, right: 10, left: -25, bottom: 90 }}>
+                <BarChart data={statusMixByLocation} margin={{ top: 25, right: 10, left: -25, bottom: 125 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-slate-100 dark:stroke-slate-900/60" />
                   <XAxis 
                     dataKey="location" 
@@ -1135,11 +1100,11 @@ export default function ChartsView({
                     textAnchor="end"
                     interval={0}
                     dx={-4}
-                    tickFormatter={(val) => val.length > 22 ? `${val.slice(0, 22)}...` : val} 
+                    tickFormatter={(val) => val} 
                   />
                   <YAxis className="text-[9px] font-mono fill-slate-400" />
                   <Tooltip content={<CustomChartTooltip />} />
-                  <Legend iconSize={8} wrapperStyle={{ fontSize: '10.5px', fontWeight: 'bold' }} />
+                  <Legend align="right" verticalAlign="top" iconSize={8} wrapperStyle={{ fontSize: '10.5px', fontWeight: 'bold', top: 0, right: 0 }} />
                   <Bar dataKey="open" name="Open" fill="#3b82f6" stackId="loc" barSize={22} />
                   <Bar dataKey="closed" name="Closed" fill="#10b981" stackId="loc" barSize={22} />
                   <Bar dataKey="revoked" name="Revoked" fill="#ef4444" stackId="loc" barSize={22} />
@@ -1152,25 +1117,26 @@ export default function ChartsView({
       </div>
 
       {/* Analytical Tabular Views Sections (Tables 5, 6) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Analytical Tabular Views Sections (Tables 5, 6) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
 
         {/* TABLE 5: Location with Unmet Demand */}
-        <div id="table-card-location-unmet-demand" className="bg-slate-50/70 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 p-5 rounded-2xl shadow-xs transition-shadow hover:shadow-md flex flex-col gap-4 h-fit">
-          <div className="mb-4">
+        <div id="table-card-location-unmet-demand" className="bg-slate-50/70 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 p-5 rounded-2xl shadow-xs transition-shadow hover:shadow-md flex flex-col gap-4">
+          <div className="mb-2">
             <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400">
               <MapPin className="h-4.5 w-4.5 stroke-[2.5]" />
               <h3 className="text-sm font-black text-black dark:text-white">Location with Unmet Demand</h3>
             </div>
           </div>
 
-          <div className="overflow-x-auto border border-slate-100 dark:border-slate-800/80 rounded-xl leading-relaxed">
+          <div className="overflow-y-auto overflow-x-auto border border-slate-100 dark:border-slate-800/80 rounded-xl leading-relaxed" style={{ maxHeight: '400px' }}>
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-slate-50 dark:bg-slate-900/60 text-slate-450 dark:text-slate-400 font-extrabold border-b border-slate-100 dark:border-slate-800/80 uppercase tracking-wider text-[10px]">
-                  <th className="py-2.5 px-4">Location(unit)</th>
-                  <th className="py-2.5 px-4 text-center">Total Opening</th>
-                  <th className="py-2.5 px-4 text-center">Total Joined</th>
-                  <th className="py-2.5 px-4 text-right">Unmet Demand</th>
+                <tr className="bg-slate-50 dark:bg-slate-900/60 text-slate-450 dark:text-slate-400 font-extrabold border-b border-slate-100 dark:border-slate-800/80 uppercase tracking-wider text-[10px] sticky top-0 z-10">
+                  <th className="py-2.5 px-4 bg-slate-50 dark:bg-slate-900">Location(unit)</th>
+                  <th className="py-2.5 px-4 text-center bg-slate-50 dark:bg-slate-900">Total Opening</th>
+                  <th className="py-2.5 px-4 text-center bg-slate-50 dark:bg-slate-900">Total Joined</th>
+                  <th className="py-2.5 px-4 text-right bg-slate-50 dark:bg-slate-900">Unmet Demand</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-105/50 dark:divide-slate-800/80">
@@ -1179,12 +1145,12 @@ export default function ChartsView({
                     <td colSpan={4} className="py-8 text-center text-slate-400">No geographic audit demand trace found.</td>
                   </tr>
                 ) : (
-                  locationUnmetDemand.map((item, idx) => (
+                  locationUnmetDemand.slice(0, 15).map((item, idx) => (
                     <tr key={idx} className="hover:bg-slate-50/70 dark:hover:bg-slate-900/20 transition-colors">
-                      <td className="py-2.5 px-4 font-bold text-slate-700 dark:text-slate-350">{item.location}</td>
-                      <td className="py-2.5 px-4 text-center font-semibold font-mono text-slate-600 dark:text-slate-400">{item.totalOpening}</td>
-                      <td className="py-2.5 px-4 text-center font-semibold font-mono text-slate-600 dark:text-slate-400">{item.totalJoined}</td>
-                      <td className="py-2.5 px-4 text-right">
+                      <td className="py-3 px-4 font-bold text-slate-700 dark:text-slate-350">{item.location}</td>
+                      <td className="py-3 px-4 text-center font-semibold font-mono text-slate-600 dark:text-slate-400">{item.totalOpening}</td>
+                      <td className="py-3 px-4 text-center font-semibold font-mono text-slate-600 dark:text-slate-400">{item.totalJoined}</td>
+                      <td className="py-3 px-4 text-right">
                         <span className={`px-2 py-1.5 font-mono text-[11px] font-black rounded-lg ${
                           item.unmetDemand > 3 
                             ? 'bg-rose-50 dark:bg-rose-950/20 text-rose-600 border border-rose-100/40' 
@@ -1204,46 +1170,120 @@ export default function ChartsView({
         </div>
 
         {/* TABLE 6: Top Designation By Applications */}
-        <div id="table-card-designation-applications" className="bg-slate-50/70 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 p-5 rounded-2xl shadow-xs transition-shadow hover:shadow-md flex flex-col gap-4 h-fit">
-          <div className="mb-4">
-            <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
-              <Award className="h-4.5 w-4.5 stroke-[2.5]" />
-              <h3 className="text-sm font-black text-black dark:text-white">Top Designation By Applications</h3>
+        <div id="table-card-designation-applications" className="bg-slate-50/70 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 p-5 rounded-2xl shadow-xs transition-shadow hover:shadow-md flex flex-col justify-between">
+          <div className="flex flex-col gap-4 h-full">
+            <div className="mb-4">
+              <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+                <Award className="h-4.5 w-4.5 stroke-[2.5]" />
+                <h3 className="text-sm font-black text-black dark:text-white">Top Designation By Applications</h3>
+              </div>
             </div>
-          </div>
 
-          <div className="overflow-x-auto border border-slate-100 dark:border-slate-800/80 rounded-xl leading-relaxed">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="bg-slate-50 dark:bg-slate-900/60 text-slate-450 dark:text-slate-400 font-extrabold border-b border-slate-100 dark:border-slate-800/80 uppercase tracking-wider text-[10px]">
-                  <th className="py-2.5 px-4">Designation</th>
-                  <th className="py-2.5 px-3 text-center">Application</th>
-                  <th className="py-2.5 px-3 text-center">SL-Round-1</th>
-                  <th className="py-2.5 px-3 text-center">SL-Round-2</th>
-                  <th className="py-2.5 px-4 text-center">Joins</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-105/50 dark:divide-slate-800/80">
-                {designationByApplications.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="py-8 text-center text-slate-400">No applicant traces registered.</td>
+            <div className="overflow-y-auto overflow-x-auto border border-slate-100 dark:border-slate-800/80 rounded-xl leading-relaxed flex-1" style={{ maxHeight: '400px' }}>
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="bg-slate-50 dark:bg-slate-900/60 text-slate-450 dark:text-slate-400 font-extrabold border-b border-slate-100 dark:border-slate-800/80 uppercase tracking-wider text-[10px] sticky top-0 z-10">
+                    <th className="py-2.5 px-4 bg-slate-50 dark:bg-slate-900">Designation</th>
+                    <th className="py-2.5 px-3 text-center bg-slate-50 dark:bg-slate-900">Application</th>
+                    <th className="py-2.5 px-3 text-center bg-slate-50 dark:bg-slate-900">SL-Round-1</th>
+                    <th className="py-2.5 px-3 text-center bg-slate-50 dark:bg-slate-900">SL-Round-2</th>
+                    <th className="py-2.5 px-4 text-center bg-slate-50 dark:bg-slate-900">Joins</th>
                   </tr>
-                ) : (
-                  designationByApplications.map((item, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50/70 dark:hover:bg-slate-900/20 transition-colors">
-                      <td className="py-2.5 px-4 font-bold text-slate-700 dark:text-slate-350 truncate max-w-[130px]" title={item.designation}>{item.designation}</td>
-                      <td className="py-2.5 px-3 text-center font-black font-mono text-blue-600 dark:text-blue-400">{item.application}</td>
-                      <td className="py-2.5 px-3 text-center font-bold font-mono text-slate-500 dark:text-slate-400">{item.slRound1}</td>
-                      <td className="py-2.5 px-3 text-center font-bold font-mono text-slate-500 dark:text-slate-400">{item.slRound2}</td>
-                      <td className="py-2.5 px-4 text-center font-black font-mono text-emerald-600 dark:text-emerald-400">{item.joins}</td>
+                </thead>
+                <tbody className="divide-y divide-slate-105/50 dark:divide-slate-800/80">
+                  {designationByApplications.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-slate-400">No applicant traces registered.</td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    designationByApplications.slice(0, 15).map((item, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50/70 dark:hover:bg-slate-900/20 transition-colors">
+                        <td className="py-3 px-4 font-bold text-slate-700 dark:text-slate-350 truncate max-w-[130px]" title={item.designation}>{item.designation}</td>
+                        <td className="py-3 px-3 text-center font-black font-mono text-blue-600 dark:text-blue-400">{item.application}</td>
+                        <td className="py-3 px-3 text-center font-bold font-mono text-slate-500 dark:text-slate-400">{item.slRound1}</td>
+                        <td className="py-3 px-3 text-center font-bold font-mono text-slate-500 dark:text-slate-400">{item.slRound2}</td>
+                        <td className="py-3 px-4 text-center font-black font-mono text-emerald-600 dark:text-emerald-400">{item.joins}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
+      </div>
+
+      {/* CHART 2: Column and Bar Charts - Atlas Charts - Opening Vs. Filled Positions By Designation */}
+      {/* Placed full-width directly below the two side-by-side tables */}
+      <div id="chart-card-opening-vs-filled-designation" className="bg-slate-50/70 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 p-5 rounded-2xl shadow-xs transition-shadow hover:shadow-md flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
+          <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+            <Briefcase className="h-4.5 w-4.5 stroke-[2.5]" />
+            <h3 className="text-sm font-black text-black dark:text-white">Opening Vs. Filled Positions By Designation</h3>
+          </div>
+          {/* Interactive Column Vs. Bar Tab Toggles (Atlas style switcher) */}
+          <div className="inline-flex rounded-lg p-0.5 bg-slate-200/60 dark:bg-slate-800/80 text-[10.5px] font-bold select-none self-start sm:self-center">
+            <button 
+              onClick={() => setDesignationChartStyle('bar')}
+              type="button"
+              className={`px-3 py-1 rounded-md transition-all cursor-pointer ${designationChartStyle === 'bar' ? 'bg-white text-black shadow-2xs dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400'}`}
+            >
+              Bar
+            </button>
+            <button 
+              onClick={() => setDesignationChartStyle('column')}
+              type="button"
+              className={`px-3 py-1 rounded-md transition-all cursor-pointer ${designationChartStyle === 'column' ? 'bg-white text-black shadow-2xs dark:bg-slate-700 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400'}`}
+            >
+              Column
+            </button>
+          </div>
+        </div>
+
+        <div className="h-[480px]">
+          {openingsVsFilledByDesignation.length === 0 ? (
+            <div className="h-full flex items-center justify-center text-slate-400 text-xs">No designation openings registered.</div>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              {designationChartStyle === 'column' ? (
+                <BarChart data={openingsVsFilledByDesignation} margin={{ top: 25, right: 10, left: -25, bottom: 180 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-slate-200/50 dark:stroke-slate-900/60" />
+                  <XAxis 
+                    dataKey="designation" 
+                    className="text-[9px] font-black fill-black dark:fill-white text-clip" 
+                    angle={-90}
+                    textAnchor="end"
+                    interval={0}
+                    dx={-4}
+                    tickFormatter={(val) => val} 
+                  />
+                  <YAxis className="text-[9px] font-mono fill-slate-500" />
+                  <Tooltip content={<CustomChartTooltip />} />
+                  <Legend 
+                    align="right"
+                    verticalAlign="top"
+                    iconType="circle" 
+                    iconSize={8} 
+                    wrapperStyle={{ fontSize: '10.5px', fontWeight: 'bold', top: 0, right: 0 }} 
+                  />
+                  <Bar dataKey="openings" name="No of Opening" fill="#1254ff" radius={[4, 4, 0, 0]} barSize={14} />
+                  <Bar dataKey="joined" name="No of Joined" fill="#00ed64" radius={[4, 4, 0, 0]} barSize={14} />
+                </BarChart>
+              ) : (
+                <BarChart layout="vertical" data={openingsVsFilledByDesignation} margin={{ top: 25, right: 15, left: 15, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} className="stroke-slate-200/50 dark:stroke-slate-900/60" />
+                  <XAxis type="number" className="text-[9px] font-mono fill-slate-500" />
+                  <YAxis type="category" dataKey="designation" className="text-[9px] font-bold fill-slate-500" width={180} tickFormatter={(val) => val} />
+                  <Tooltip content={<CustomChartTooltip />} />
+                  <Legend align="right" verticalAlign="top" iconType="circle" iconSize={8} wrapperStyle={{ fontSize: '10.5px', fontWeight: 'bold', top: 0, right: 0 }} />
+                  <Bar dataKey="openings" name="No of Opening" fill="#1254ff" radius={[0, 4, 4, 0]} barSize={8} />
+                  <Bar dataKey="joined" name="No of Joined" fill="#00ed64" radius={[0, 4, 4, 0]} barSize={8} />
+                </BarChart>
+              )}
+            </ResponsiveContainer>
+          )}
+        </div>
       </div>
 
       {/* Advanced Recruitment Funnel Conversions & Source Metrics (Charts 7, 8, 9, 10 Table) */}
@@ -1263,7 +1303,7 @@ export default function ChartsView({
               <div className="h-full flex items-center justify-center text-slate-400 text-xs">No unit conversions captured.</div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={funnelByLocation} margin={{ top: 10, right: 10, left: -25, bottom: 90 }}>
+                <BarChart data={funnelByLocation} margin={{ top: 25, right: 10, left: -25, bottom: 125 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-slate-100 dark:stroke-slate-900/60" />
                   <XAxis 
                     dataKey="location" 
@@ -1272,11 +1312,11 @@ export default function ChartsView({
                     textAnchor="end"
                     interval={0}
                     dx={-4}
-                    tickFormatter={(val) => val.length > 22 ? `${val.slice(0, 22)}...` : val} 
+                    tickFormatter={(val) => val} 
                   />
                   <YAxis className="text-[9px] font-mono fill-slate-400" />
                   <Tooltip content={<CustomChartTooltip />} />
-                  <Legend iconSize={8} wrapperStyle={{ fontSize: '10px' }} />
+                  <Legend align="right" verticalAlign="top" iconSize={8} wrapperStyle={{ fontSize: '10px', top: 0, right: 0 }} />
                   <Bar dataKey="applied" name="Applied for position" fill="#3b82f6" />
                   <Bar dataKey="shortlistedR1" name="SL Round 1" fill="#06b6d4" />
                   <Bar dataKey="shortlistedR2" name="SL Round 2" fill="#6366f1" />
@@ -1302,7 +1342,7 @@ export default function ChartsView({
               <div className="h-full flex items-center justify-center text-slate-400 text-xs">No source of category data registered.</div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={sourceOfCategoryData} margin={{ top: 20, right: 10, left: -25, bottom: 90 }}>
+                <BarChart data={sourceOfCategoryData} margin={{ top: 20, right: 10, left: -25, bottom: 125 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-slate-100 dark:stroke-slate-900/60" />
                   <XAxis 
                     dataKey="category" 
@@ -1311,7 +1351,7 @@ export default function ChartsView({
                     textAnchor="end"
                     interval={0}
                     dx={-4}
-                    tickFormatter={(val) => val.length > 25 ? `${val.slice(0, 25)}...` : val} 
+                    tickFormatter={(val) => val} 
                   />
                   <YAxis className="text-[9px] font-mono fill-slate-400" />
                   <Tooltip content={<CustomChartTooltip />} />
@@ -1336,7 +1376,7 @@ export default function ChartsView({
               <div className="h-full flex items-center justify-center text-slate-400 text-xs">No channel data registered.</div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={sourceCategoryPerformance} margin={{ top: 20, right: 10, left: -25, bottom: 90 }}>
+                <BarChart data={sourceCategoryPerformance} margin={{ top: 20, right: 10, left: -25, bottom: 125 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-slate-100 dark:stroke-slate-900/60" />
                   <XAxis 
                     dataKey="source" 
@@ -1345,7 +1385,7 @@ export default function ChartsView({
                     textAnchor="end"
                     interval={0}
                     dx={-4}
-                    tickFormatter={(val) => val.length > 25 ? `${val.slice(0, 25)}...` : val} 
+                    tickFormatter={(val) => val} 
                   />
                   <YAxis className="text-[9px] font-mono fill-slate-400" />
                   <Tooltip content={<CustomChartTooltip />} />

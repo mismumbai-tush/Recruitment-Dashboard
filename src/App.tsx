@@ -25,14 +25,6 @@ import {
   aggregateUnitInsights, 
   extractFilterOptions 
 } from './lib/metrics';
-import { 
-  MOCK_MRF, 
-  MOCK_CANDIDATES, 
-  MOCK_INTERVIEWS, 
-  MOCK_CHECK,
-  getPaddedMockRawInterviews,
-  getPaddedMockRawCheck
-} from './mockData';
 import { MRFRow, CandidateRow, InterviewRow, CheckRow, FilterState } from './types';
 import { SHEETS_CONFIG } from './config/sheetsConfig';
 
@@ -223,21 +215,79 @@ export default function App() {
   const [showConfigModal, setShowConfigModal] = useState<boolean>(false);
 
   // Live Sheet Data state
-  const [mrfs, setMrfs] = useState<MRFRow[]>(MOCK_MRF);
-  const [candidates, setCandidates] = useState<CandidateRow[]>(MOCK_CANDIDATES);
-  const [interviews, setInterviews] = useState<InterviewRow[]>(MOCK_INTERVIEWS);
-  const [checks, setChecks] = useState<CheckRow[]>(MOCK_CHECK);
+  const [mrfs, setMrfs] = useState<MRFRow[]>(() => {
+    try {
+      const cached = localStorage.getItem('cached_mrfs');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [candidates, setCandidates] = useState<CandidateRow[]>(() => {
+    try {
+      const cached = localStorage.getItem('cached_candidates');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [interviews, setInterviews] = useState<InterviewRow[]>(() => {
+    try {
+      const cached = localStorage.getItem('cached_interviews');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [checks, setChecks] = useState<CheckRow[]>(() => {
+    try {
+      const cached = localStorage.getItem('cached_checks');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
 
   // Raw Sheet Matrices for direct KPI calculations (COUNTA, sums by column letters)
-  const [rawMrf, setRawMrf] = useState<string[][]>([]);
-  const [rawCandidates, setRawCandidates] = useState<string[][]>([]);
-  const [rawInterviews, setRawInterviews] = useState<string[][]>(getPaddedMockRawInterviews());
-  const [rawCheck, setRawCheck] = useState<string[][]>(getPaddedMockRawCheck());
+  const [rawMrf, setRawMrf] = useState<string[][]>(() => {
+    try {
+      const cached = localStorage.getItem('cached_raw_mrf');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [rawCandidates, setRawCandidates] = useState<string[][]>(() => {
+    try {
+      const cached = localStorage.getItem('cached_raw_candidates');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [rawInterviews, setRawInterviews] = useState<string[][]>(() => {
+    try {
+      const cached = localStorage.getItem('cached_raw_interviews');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [rawCheck, setRawCheck] = useState<string[][]>(() => {
+    try {
+      const cached = localStorage.getItem('cached_raw_check');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
 
   // Loading & Error notifications
   const [syncing, setSyncing] = useState<boolean>(false);
   const [syncError, setSyncError] = useState<string | null>(null);
-  const [lastSyncedTime, setLastSyncedTime] = useState<string>('Ready');
+  const [lastSyncedTime, setLastSyncedTime] = useState<string>(() => {
+    return localStorage.getItem('cached_last_synced_time') || 'Ready';
+  });
 
   // Filters State
   const [filters, setFilters] = useState<FilterState>({
@@ -412,6 +462,21 @@ export default function App() {
       setRawInterviews(rawInterviews);
       setRawCheck(rawCheck);
 
+      // Save to cache for instant sub-second future boots
+      try {
+        localStorage.setItem('cached_mrfs', JSON.stringify(parsedMrf));
+        localStorage.setItem('cached_candidates', JSON.stringify(parsedCandidates));
+        localStorage.setItem('cached_interviews', JSON.stringify(parsedInterviews));
+        localStorage.setItem('cached_checks', JSON.stringify(parsedCheck));
+        localStorage.setItem('cached_raw_mrf', JSON.stringify(rawMrf));
+        localStorage.setItem('cached_raw_candidates', JSON.stringify(rawCandidates));
+        localStorage.setItem('cached_raw_interviews', JSON.stringify(rawInterviews));
+        localStorage.setItem('cached_raw_check', JSON.stringify(rawCheck));
+        localStorage.setItem('cached_last_synced_time', new Date().toLocaleTimeString());
+      } catch (cacheErr) {
+        console.warn('Failed to commit cache:', cacheErr);
+      }
+
       setIsDemoMode(false);
       setLastSyncedTime(new Date().toLocaleTimeString());
       setSyncError(null);
@@ -429,15 +494,9 @@ export default function App() {
       if (triggerType === 'manual') {
         setSyncError(friendlyMessage);
       } else {
-        console.warn('Automatic initial Google Sheet fetch skipped or offline. Dashboard content initialized cleanly with robust local demo datasets.');
+        console.warn('Automatic initial Google Sheet fetch skipped or offline.');
       }
       
-      if (!rawInterviews || rawInterviews.length === 0) {
-        setRawInterviews(getPaddedMockRawInterviews());
-      }
-      if (!rawCheck || rawCheck.length === 0) {
-        setRawCheck(getPaddedMockRawCheck());
-      }
       setIsDemoMode(true); // Fallback to demo mode so user understands stale visuals
     } finally {
       setSyncing(false);
@@ -456,11 +515,11 @@ export default function App() {
     } else if (accessToken) {
       syncGoogleSheets(spreadsheetId, accessToken);
     } else {
-      // Default to demo datasets unless they loaded real local storage values
-      setMrfs(MOCK_MRF);
-      setCandidates(MOCK_CANDIDATES);
-      setInterviews(MOCK_INTERVIEWS);
-      setChecks(MOCK_CHECK);
+      // Initial state is cleanly empty
+      setMrfs([]);
+      setCandidates([]);
+      setInterviews([]);
+      setChecks([]);
       setIsDemoMode(true);
       setLastSyncedTime('Ready');
     }
@@ -540,6 +599,17 @@ export default function App() {
     localStorage.removeItem('recruitment_spreadsheet_id');
     localStorage.removeItem('recruitment_apps_script_url');
     
+    // Clear cached sheets data
+    localStorage.removeItem('cached_mrfs');
+    localStorage.removeItem('cached_candidates');
+    localStorage.removeItem('cached_interviews');
+    localStorage.removeItem('cached_checks');
+    localStorage.removeItem('cached_raw_mrf');
+    localStorage.removeItem('cached_raw_candidates');
+    localStorage.removeItem('cached_raw_interviews');
+    localStorage.removeItem('cached_raw_check');
+    localStorage.removeItem('cached_last_synced_time');
+
     setCustomSpreadsheetId('');
     const defaultUrl = SHEETS_CONFIG.appsScriptUrl || '';
     const defaultId = SHEETS_CONFIG.spreadsheetId || '';
@@ -558,10 +628,10 @@ export default function App() {
     } else if (defaultId && accessToken) {
       syncGoogleSheets(defaultId, accessToken, 'manual');
     } else {
-      setMrfs(MOCK_MRF);
-      setCandidates(MOCK_CANDIDATES);
-      setInterviews(MOCK_INTERVIEWS);
-      setChecks(MOCK_CHECK);
+      setMrfs([]);
+      setCandidates([]);
+      setInterviews([]);
+      setChecks([]);
       
       // Reset raw state matrices
       setRawMrf([]);
@@ -753,7 +823,7 @@ export default function App() {
           setFilters={setFilters}
           options={filterOptions}
           onRefresh={triggerRefresh}
-          loading={syncing}
+          loading={syncing && mrfs.length === 0}
         />
 
         {/* 4. Unified key performance indicators (KPIs) exactly matching user requirements */}
@@ -767,7 +837,7 @@ export default function App() {
               iconName="Users"
               description="Candidates applied for role"
               colorTheme="blue"
-              loading={syncing}
+              loading={syncing && mrfs.length === 0}
             />
             <KPICard
               id="kpi-total-joined"
@@ -776,7 +846,7 @@ export default function App() {
               iconName="CheckCircle"
               description="Onboarded candidates"
               colorTheme="green"
-              loading={syncing}
+              loading={syncing && mrfs.length === 0}
             />
             <KPICard
               id="kpi-total-opening"
@@ -785,7 +855,7 @@ export default function App() {
               iconName="Briefcase"
               description="Hiring targets from MRF"
               colorTheme="indigo"
-              loading={syncing}
+              loading={syncing && mrfs.length === 0}
             />
             <KPICard
               id="kpi-open-positions"
@@ -794,7 +864,7 @@ export default function App() {
               iconName="HelpCircle"
               description="Active active vacancies"
               colorTheme="amber"
-              loading={syncing}
+              loading={syncing && mrfs.length === 0}
             />
             <KPICard
               id="kpi-fill-rate"
@@ -803,7 +873,7 @@ export default function App() {
               iconName="Percent"
               description="Joins vs Opening ratio"
               colorTheme="teal"
-              loading={syncing}
+              loading={syncing && mrfs.length === 0}
             />
             <KPICard
               id="kpi-total-accepted"
@@ -812,7 +882,7 @@ export default function App() {
               iconName="FileText"
               description="Offer letters signed"
               colorTheme="orange"
-              loading={syncing}
+              loading={syncing && mrfs.length === 0}
             />
             <KPICard
               id="kpi-r1-selected"
@@ -821,7 +891,7 @@ export default function App() {
               iconName="CheckCircle"
               description="Cleared screening round"
               colorTheme="teal"
-              loading={syncing}
+              loading={syncing && mrfs.length === 0}
             />
             <KPICard
               id="kpi-r2-selected"
@@ -830,7 +900,7 @@ export default function App() {
               iconName="CheckCircle"
               description="Cleared final assessment"
               colorTheme="indigo"
-              loading={syncing}
+              loading={syncing && mrfs.length === 0}
             />
           </div>
         </section>
